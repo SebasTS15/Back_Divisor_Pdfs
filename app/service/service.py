@@ -31,8 +31,11 @@ class Pdfservice:
             inicio, fin = token.split('-')
 
             if not inicio.isdigit() or not fin.isdigit():
+
                 raise ValueError(f"El rango '{token}' no es valido")
-            if int(fin) > int(inicio):
+            
+            if int(inicio) > int(fin):
+
                 raise ValueError (f"El rango del '{token}' está invertido")
         else:
 
@@ -62,7 +65,7 @@ class Pdfservice:
         tokens = text.replace(" ","").split(",")
 
         for token in tokens:
-            
+
             self.validate_token(token)
 
             if "-" in token:
