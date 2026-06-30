@@ -7,7 +7,9 @@ import os
 class Pdfservice:
 
     def __init__(self, file) -> None:
-        self.pdf = PdfReader(file)
+        pdf_file = getattr(file, "file", file)
+        pdf_file.seek(0)
+        self.pdf = PdfReader(pdf_file)
 
     def get_title(self):
         return self.pdf.metadata.title if self.pdf.metadata else None
@@ -83,7 +85,7 @@ class Pdfservice:
         
         return new_pdfs
 
-    def create_zip_pdf(new_pdfs: list[BytesIO], name_zip: str):
+    def create_zip_pdf(self, new_pdfs: list[BytesIO], name_zip: str):
 
         memoria_zip = BytesIO()
 
@@ -91,7 +93,7 @@ class Pdfservice:
             
             for indice, archivo in enumerate(new_pdfs):
 
-                zip_f.writestr(f'{name_zip}_{indice+1}.pdf',archivo.getvalue())
+                zip_f.writestr(f'{name_zip}_{indice + 1}.pdf',archivo.getvalue())
 
         memoria_zip.seek(0)
         

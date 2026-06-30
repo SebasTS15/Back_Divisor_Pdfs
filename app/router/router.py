@@ -7,9 +7,9 @@ router = APIRouter()
 
 @router.post('/splitter_pdf')
 def splitter_pdf(
-    name_pdf: str = Form(),
-    pages_splitter: int = Form(), 
-    file: UploadFile = File()
+    name_pdf: str = Form(...),
+    pages_splitter: int = Form(...),
+    file: UploadFile = File(...)
     ):
 
     if file.content_type != 'application/pdf':
@@ -34,8 +34,9 @@ def splitter_pdf(
         )
 
 
-@goruter.get('/estrac_pdf')
+@router.get('/estrac_pdf')
 def estract_pd():
+    
     pass
 
 
