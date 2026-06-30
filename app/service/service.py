@@ -1,3 +1,4 @@
+import ast
 from io import BytesIO
 import zipfile 
 from pypdf import PdfReader, PdfWriter
@@ -15,7 +16,29 @@ class Pdfservice:
         return self.pdf.metadata.title if self.pdf.metadata else None
     
     def get_pages(self):
-        return len(self.pdf.pages) 
+        return len(self.pdf.pages)
+
+    def validate_token(self, token:str):
+
+        if not token:
+            raise ValueError('Hay un elemento vacio')
+        
+        if token.count('-')>1:
+            raise ValueError(f"El token '{token}' tiene más de un '-'")
+
+        if '-' in token:
+            
+            inicio, fin = token.split('-')
+
+            if not inicio.isdigit() or not fin.isdigit():
+                raise ValueError(f"El rango '{token}' no es valido")
+            if int(fin) > int(inicio):
+                raise ValueError (f"El rango del '{token}' está invertido")
+        else:
+
+            if not token.isdigit():
+                raise ValueError(f"El '{token}' no es un número válido")
+
     
     def validate_pages_per_pdf(self, pages_per_pdf: int):
         total_pages = self.get_pages()
@@ -31,12 +54,36 @@ class Pdfservice:
                 f"El PDF solo tiene {total_pages} páginas y no puede dividirse en bloques de {pages_per_pdf}."
             )
 
+    
+    def convercion_list_pdfs(self,text: str):
+        
+        pages = []
+
+        tokens = text.replace(" ","").split(",")
+
+        for token in tokens:
+            
+            self.validate_token(token)
+
+            if "-" in token:
+                
+                inicio, fin = token.split('-')
+
+                for page in range(int(inicio), int(fin) +1 ):
+
+                    pages.append(page)
+
+            else:
+
+                pages.append(int(token))
+
+        return pages
 
     
-    def creat_new_pdf(self,pages:list[int]):
+    def estract_and_create_new_pdf(self,pages:list[int]):
 
         for i in range(len(pages)):
-    
+
             self.validate_pages_per_pdf(pages[i])
 
         new_pdf = PdfWriter()
@@ -99,8 +146,4 @@ class Pdfservice:
         
         return memoria_zip
 
-
-
-
-    
 
